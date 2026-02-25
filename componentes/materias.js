@@ -56,44 +56,42 @@ const materias = {
         },
     },
     template: `
-        <div class="row">
-            <div class="col-6">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
                 <form id="frmMaterias" @submit.prevent="guardarMateria" @reset.prevent="limpiarFormulario">
-                    <div class="card text-bg-dark mb-3" style="max-width: 36rem;">
-                        <div class="card-header">REGISTRO DE ALUMNOS</div>
-                        <div class="card-body">
-                            <div class="row p-1">
-                                <div class="col-3">
-                                    CODIGO:
+                    <div class="card shadow border-0 rounded-3 overflow-hidden">
+                        <div class="card-header bg-dark bg-gradient text-white py-3">
+                            <h5 class="card-title mb-0 fw-bold">
+                                <i class="bi bi-book-half me-2"></i>REGISTRO DE MATERIAS
+                            </h5>
+                        </div>
+                        <div class="card-body p-4 bg-white">
+                            <div class="row g-3">
+                                <div class="col-md-5">
+                                    <label class="form-label fw-semibold small text-secondary">CÓDIGO</label>
+                                    <input placeholder="MAT101" required v-model="materia.codigo" type="text" class="form-control bg-light border-0 py-2">
                                 </div>
-                                <div class="col-3">
-                                    <input placeholder="codigo" required v-model="materia.codigo" type="text" class="form-control">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold small text-secondary">NOMBRE DE LA MATERIA</label>
+                                    <input placeholder="Matemática I" required v-model="materia.nombre" type="text" class="form-control bg-light border-0 py-2">
                                 </div>
-                            </div>
-                            <div class="row p-1">
-                                <div class="col-3">
-                                    NOMBRE:
-                                </div>
-                                <div class="col-6">
-                                    <input placeholder="nombre" required v-model="materia.nombre" type="text" class="form-control">
-                                </div>
-                            </div>
-                            <div class="row p-1">
-                                <div class="col-3">
-                                    UV:
-                                </div>
-                                <div class="col-9">
-                                    <input placeholder="uv" required v-model="materia.uv" type="text" class="form-control">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold small text-secondary">UNIDADES VALORATIVAS (UV)</label>
+                                    <input placeholder="4" required v-model="materia.uv" type="number" class="form-control bg-light border-0 py-2" min="1" max="10">
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <div class="row">
-                                <div class="col text-center">
-                                    <button type="submit" id="btnGuardarMateria" class="btn btn-primary">GUARDAR</button>
-                                    <button type="reset" id="btnCancelarMateria" class="btn btn-warning">NUEVO</button>
-                                    <button type="button" @click="buscarMateria" id="btnBuscarMateria" class="btn btn-success">BUSCAR</button>
-                                </div>
+                        <div class="card-footer bg-light border-0 text-center py-3">
+                            <div class="d-flex justify-content-center gap-2">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                                    <i class="bi bi-floppy me-2"></i>GUARDAR
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                                    <i class="bi bi-plus-lg me-2"></i>NUEVO
+                                </button>
+                                <button type="button" @click="buscarMateria" class="btn btn-outline-success rounded-pill px-4 fw-bold">
+                                    <i class="bi bi-search me-2"></i>BUSCAR
+                                </button>
                             </div>
                         </div>
                     </div>

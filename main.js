@@ -4,18 +4,28 @@ const { createApp } = Vue,
     sha256 = CryptoJS.SHA256;
 
 
-createApp({
+const app = createApp({
     components: {
         alumnos,
         busqueda_alumnos,
         materias,
         busqueda_materias,
         docentes,
-        busqueda_docentes
+        busqueda_docentes,
+        matriculas,
+        busqueda_matriculas,
+        inscripciones,
+        busqueda_inscripciones,
+        login,
     },
     data() {
         return {
+            sesion: {
+                autenticado: false,
+                usuario: null,
+            },
             forms: {
+                login: { mostrar: true },
                 alumnos: { mostrar: false },
                 busqueda_alumnos: { mostrar: false },
                 materias: { mostrar: false },
@@ -23,7 +33,9 @@ createApp({
                 docentes: { mostrar: false },
                 busqueda_docentes: { mostrar: false },
                 matriculas: { mostrar: false },
-                inscripciones: { mostrar: false }
+                busqueda_matriculas: { mostrar: false },
+                inscripciones: { mostrar: false },
+                busqueda_inscripciones: { mostrar: false }
             }
         }
     },
@@ -39,10 +51,38 @@ createApp({
         }
     },
     mounted() {
-        db.version(1).stores({
-            "alumnos": "idAlumno, codigo, nombre, direccion, email, telefono",
+        db.version(5).stores({
+            "alumnos": "idAlumno, codigo, nombre, direccion, email, telefono, hash",
             "materias": "idMateria, codigo, nombre, uv",
-            "docentes": "idDocente, codigo, nombre, direccion, email, telefono, escalafon"
+            "docentes": "idDocente, codigo, nombre, direccion, email, telefono, escalafon",
+            "matriculas": "idMatricula, idAlumno, fecha, ciclo",
+            "inscripciones": "idInscripcion, idAlumno, idMateria, fecha, ciclo",
+            "usuarios": "idUsuario, usuario, clave"
+        });
+
+        // Usuario administrador por defecto si no existe
+        db.usuarios.count().then(count => {
+            if (count === 0) {
+                db.usuarios.add({
+                    idUsuario: 1,
+                    usuario: 'admin',
+                    clave: sha256('123').toString()
+                });
+            }
         });
     }
-}).mount("#app");
+});
+
+// Registro GLOBAL del componente v-select (defensivo para v4 beta o v3)
+const vSelectComponent = window.vSelect ||
+    window.VueSelect?.default ||
+    window.VueSelect ||
+    window["vue-select"]?.default ||
+    window["vue-select"];
+
+if (vSelectComponent) {
+    app.component('v-select', vSelectComponent);
+} else {
+    console.warn("v-select no se pudo cargar. Verifique la conexión al CDN.");
+}
+app.mount("#app");

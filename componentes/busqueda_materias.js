@@ -27,33 +27,49 @@ const busqueda_materias = {
         },
     },
     template: `
-        <div class="row">
-            <div class="col-6">
-                <table class="table table-striped table-hover" id="tblMaterias">
-                    <thead>
-                        <tr>
-                            <th colspan="6">
-                                <input autocomplete="off" type="search" @keyup="obtenerMaterias()" v-model="buscar" placeholder="Buscar materia" class="form-control">
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>CODIGO</th>
-                            <th>NOMBRE</th>
-                            <th>UV</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="materia in materias" :key="materia.idMateria" @click="modificarMateria(materia)">
-                            <td>{{ materia.codigo }}</td>
-                            <td>{{ materia.nombre }}</td>
-                            <td>{{ materia.uv }}</td>
-                            <td>
-                                <button class="btn btn-danger" @click="eliminarMateria(materia, $event)">DEL</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="row justify-content-center mt-3">
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-0">
+                        <div class="p-3 bg-light border-bottom">
+                            <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                                <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                                <input autocomplete="off" type="search" @keyup="obtenerMaterias()" v-model="buscar" 
+                                    placeholder="Buscar por nombre o código..." class="form-control border-0 py-2">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="tblMaterias">
+                                <thead class="table-dark bg-gradient">
+                                    <tr>
+                                        <th class="ps-3 border-0">CÓDIGO</th>
+                                        <th class="border-0">NOMBRE</th>
+                                        <th class="border-0">UV</th>
+                                        <th class="border-0 text-center">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="materia in materias" :key="materia.idMateria" @click="modificarMateria(materia)" style="cursor: pointer;">
+                                        <td class="ps-3 fw-bold text-primary">{{ materia.codigo }}</td>
+                                        <td>{{ materia.nombre }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ materia.uv }} UV</span></td>
+                                        <td class="text-center">
+                                            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @click="eliminarMateria(materia, $event)">
+                                                <i class="bi bi-trash3-fill me-1"></i> Eliminar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="materias.length === 0">
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            <i class="bi bi-book-fill fs-2 d-block mb-2"></i>
+                                            No se encontraron materias
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `

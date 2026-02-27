@@ -17,6 +17,7 @@ const app = createApp({
         inscripciones,
         busqueda_inscripciones,
         login,
+        usuarios,
     },
     data() {
         return {
@@ -35,7 +36,8 @@ const app = createApp({
                 matriculas: { mostrar: false },
                 busqueda_matriculas: { mostrar: false },
                 inscripciones: { mostrar: false },
-                busqueda_inscripciones: { mostrar: false }
+                busqueda_inscripciones: { mostrar: false },
+                usuarios: { mostrar: false }
             }
         }
     },
@@ -51,25 +53,16 @@ const app = createApp({
         }
     },
     mounted() {
-        db.version(5).stores({
-            "alumnos": "idAlumno, codigo, nombre, direccion, email, telefono, hash",
+        db.version(7).stores({
+            "alumnos": "idAlumno, codigo, nombre, direccion, municipio, departamento, telefono, fechaNacimiento, sexo, hash, email",
             "materias": "idMateria, codigo, nombre, uv",
             "docentes": "idDocente, codigo, nombre, direccion, email, telefono, escalafon",
             "matriculas": "idMatricula, idAlumno, fecha, ciclo",
             "inscripciones": "idInscripcion, idAlumno, idMateria, fecha, ciclo",
-            "usuarios": "idUsuario, usuario, clave"
+            "usuarios": "idUsuario, usuario, hash"
         });
 
-        // Usuario administrador por defecto si no existe
-        db.usuarios.count().then(count => {
-            if (count === 0) {
-                db.usuarios.add({
-                    idUsuario: 1,
-                    usuario: 'admin',
-                    clave: sha256('123').toString()
-                });
-            }
-        });
+        // Los usuarios se gestionarán desde el componente de usuarios.
     }
 });
 

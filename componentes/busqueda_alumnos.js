@@ -45,8 +45,13 @@ const busqueda_alumnos = {
                                         <th class="ps-3">CÓDIGO</th>
                                         <th>NOMBRE</th>
                                         <th>DIRECCIÓN</th>
-                                        <th>EMAIL</th>
+                                        <th>MUNICIPIO</th>
+                                        <th>DEPTO</th>
                                         <th>TELÉFONO</th>
+                                        <th>NACIMIENTO</th>
+                                        <th>SEXO</th>
+                                        <th>EMAIL</th>
+                                        <th>HASH</th>
                                         <th class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
@@ -55,16 +60,21 @@ const busqueda_alumnos = {
                                         <td class="ps-3 fw-bold text-primary">{{ alumno.codigo }}</td>
                                         <td>{{ alumno.nombre }}</td>
                                         <td>{{ alumno.direccion }}</td>
-                                        <td><span class="badge bg-light text-dark border">{{ alumno.email }}</span></td>
+                                        <td>{{ alumno.municipio }}</td>
+                                        <td>{{ alumno.departamento }}</td>
                                         <td>{{ alumno.telefono }}</td>
+                                        <td>{{ alumno.fechaNacimiento }}</td>
+                                        <td>{{ alumno.sexo }}</td>
+                                        <td><span class="badge bg-light text-dark border small">{{ alumno.email }}</span></td>
+                                        <td><small class="text-muted font-monospace" style="font-size: 0.7rem;">{{ alumno.hash?.substring(0,8) }}...</small></td>
                                         <td class="text-center">
                                             <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @click="eliminarAlumno(alumno, $event)">
-                                                <i class="bi bi-trash3-fill me-1"></i> Eliminar
+                                                <i class="bi bi-trash3-fill me-1"></i>
                                             </button>
                                         </td>
                                     </tr>
                                     <tr v-if="alumnos.length === 0">
-                                        <td colspan="6" class="text-center py-4 text-muted">
+                                        <td colspan="11" class="text-center py-4 text-muted">
                                             <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                                             No se encontraron alumnos
                                         </td>

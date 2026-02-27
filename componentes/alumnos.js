@@ -7,11 +7,16 @@ const alumnos = {
                 codigo: "",
                 nombre: "",
                 direccion: "",
-                email: "",
-                telefono: ""
+                municipio: "",
+                departamento: "",
+                telefono: "",
+                fechaNacimiento: "",
+                sexo: "",
+                email: ""
             },
             accion: 'nuevo',
             idAlumno: 0,
+            hashActual: '',
             data_alumnos: []
         }
     },
@@ -26,8 +31,13 @@ const alumnos = {
             this.alumno.codigo = alumno.codigo;
             this.alumno.nombre = alumno.nombre;
             this.alumno.direccion = alumno.direccion;
-            this.alumno.email = alumno.email;
+            this.alumno.municipio = alumno.municipio;
+            this.alumno.departamento = alumno.departamento;
             this.alumno.telefono = alumno.telefono;
+            this.alumno.fechaNacimiento = alumno.fechaNacimiento;
+            this.alumno.sexo = alumno.sexo;
+            this.alumno.email = alumno.email;
+            this.hashActual = alumno.hash;
         },
         async guardarAlumno() {
             try {
@@ -39,9 +49,13 @@ const alumnos = {
                     codigo: this.alumno.codigo,
                     nombre: this.alumno.nombre,
                     direccion: this.alumno.direccion,
-                    email: this.alumno.email,
+                    municipio: this.alumno.municipio,
+                    departamento: this.alumno.departamento,
                     telefono: this.alumno.telefono,
-                    hash: sha256('123').toString()
+                    fechaNacimiento: this.alumno.fechaNacimiento,
+                    sexo: this.alumno.sexo,
+                    email: this.alumno.email,
+                    hash: this.accion == 'modificar' ? (this.hashActual || sha256('123').toString()) : sha256('123').toString()
                 };
 
                 // Validar duplicidad de código
@@ -52,6 +66,14 @@ const alumnos = {
                 }
 
                 await db.alumnos.put(datos);
+
+                // Sincronizar con la tabla de usuarios
+                await db.usuarios.put({
+                    idUsuario: datos.idAlumno,
+                    usuario: datos.codigo,
+                    hash: datos.hash
+                });
+
                 this.limpiarFormulario();
                 alertify.success(`${datos.nombre} guardado correctamente`);
             } catch (error) {
@@ -68,8 +90,13 @@ const alumnos = {
             this.alumno.codigo = '';
             this.alumno.nombre = '';
             this.alumno.direccion = '';
-            this.alumno.email = '';
+            this.alumno.municipio = '';
+            this.alumno.departamento = '';
             this.alumno.telefono = '';
+            this.alumno.fechaNacimiento = '';
+            this.alumno.sexo = '';
+            this.alumno.email = '';
+            this.hashActual = '';
         },
     },
     template: `
@@ -96,13 +123,33 @@ const alumnos = {
                                     <label class="form-label fw-semibold small text-secondary">DIRECCIÓN</label>
                                     <input placeholder="Av. Principal #123" required v-model="alumno.direccion" type="text" class="form-control bg-light border-0 py-2">
                                 </div>
-                                <div class="col-md-7">
-                                    <label class="form-label fw-semibold small text-secondary">EMAIL</label>
-                                    <input placeholder="juan@ejemplo.com" required v-model="alumno.email" type="email" class="form-control bg-light border-0 py-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small text-secondary">MUNICIPIO</label>
+                                    <input placeholder="Ej: San Salvador" required v-model="alumno.municipio" type="text" class="form-control bg-light border-0 py-2">
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small text-secondary">DEPARTAMENTO</label>
+                                    <input placeholder="Ej: San Salvador" required v-model="alumno.departamento" type="text" class="form-control bg-light border-0 py-2">
+                                </div>
+                                <div class="col-md-4">
                                     <label class="form-label fw-semibold small text-secondary">TELÉFONO</label>
                                     <input placeholder="7777-8888" required v-model="alumno.telefono" type="text" class="form-control bg-light border-0 py-2">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold small text-secondary">FECHA DE NACIMIENTO</label>
+                                    <input required v-model="alumno.fechaNacimiento" type="date" class="form-control bg-light border-0 py-2">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold small text-secondary">SEXO</label>
+                                    <select required v-model="alumno.sexo" class="form-select bg-light border-0 py-2">
+                                        <option value="" disabled>Seleccione...</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small text-secondary">EMAIL</label>
+                                    <input placeholder="juan@ejemplo.com" required v-model="alumno.email" type="email" class="form-control bg-light border-0 py-2">
                                 </div>
                             </div>
                         </div>

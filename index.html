@@ -43,6 +43,9 @@
                         <a class="nav-link px-3 rounded-pill" href="#" @click="abrirVentana('inscripciones')">
                             <i class="bi bi-journal-plus me-1"></i> Inscripciones
                         </a>
+                        <!-- <a class="nav-link px-3 rounded-pill" href="#" @click="abrirVentana('usuarios')">
+                            <i class="bi bi-person-gear me-1"></i> Usuarios
+                        </a> -->
                         <div class="vr mx-2 d-none d-lg-block text-white-50"></div>
                         <a class="nav-link text-danger px-3 rounded-pill" href="#"
                             @click="sesion.autenticado = false; forms.login.mostrar = true">
@@ -80,6 +83,8 @@
                     ref="inscripciones" v-show="forms.inscripciones.mostrar"></inscripciones>
                 <busqueda_inscripciones @modificar='modificar("inscripciones","modificarInscripcion", $event)'
                     ref="busqueda_inscripciones" v-show="forms.busqueda_inscripciones.mostrar"></busqueda_inscripciones>
+
+                <usuarios :forms="forms" ref="usuarios" v-show="forms.usuarios.mostrar"></usuarios>
             </div>
         </div>
     </div>
@@ -101,6 +106,7 @@
     <script src="componentes/busqueda_matriculas.js"></script>
     <script src="componentes/inscripciones.js"></script>
     <script src="componentes/busqueda_inscripciones.js"></script>
+    <script src="componentes/usuarios.js"></script>
     <script src="main.js"></script>
 </body>
 

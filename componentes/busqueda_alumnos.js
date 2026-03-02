@@ -14,6 +14,27 @@ const busqueda_alumnos = {
                 alumno => alumno.codigo.toLowerCase().includes(this.buscar.toLowerCase())
                     || alumno.nombre.toLowerCase().includes(this.buscar.toLowerCase())
             ).toArray();
+            // por si algún registro antiguo aún no tiene hashDatos (pre-migración)
+            this.alumnos = this.alumnos.map(alumno => {
+                if (!alumno.hashDatos) {
+                    const base = {
+                        idAlumno: alumno.idAlumno,
+                        codigo: alumno.codigo,
+                        nombre: alumno.nombre,
+                        direccion: alumno.direccion,
+                        municipio: alumno.municipio,
+                        departamento: alumno.departamento,
+                        telefono: alumno.telefono,
+                        fechaNacimiento: alumno.fechaNacimiento,
+                        sexo: alumno.sexo,
+                        email: alumno.email
+                    };
+                    alumno.hashDatos = sha256(JSON.stringify(base)).toString();
+                    // opcionalmente guardar el valor en la BD para no recalcular
+                    db.alumnos.put(alumno);
+                }
+                return alumno;
+            });
         },
         async eliminarAlumno(alumno, e) {
             e.stopPropagation();
@@ -51,7 +72,7 @@ const busqueda_alumnos = {
                                         <th>NACIMIENTO</th>
                                         <th>SEXO</th>
                                         <th>EMAIL</th>
-                                        <th>HASH</th>
+                                        <th>HASH DATOS</th>
                                         <th class="text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
@@ -66,7 +87,7 @@ const busqueda_alumnos = {
                                         <td>{{ alumno.fechaNacimiento }}</td>
                                         <td>{{ alumno.sexo }}</td>
                                         <td><span class="badge bg-light text-dark border small">{{ alumno.email }}</span></td>
-                                        <td><small class="text-muted font-monospace" style="font-size: 0.7rem;">{{ alumno.hash?.substring(0,8) }}...</small></td>
+                                        <td><small class="text-muted font-monospace" style="font-size: 0.7rem;">{{ alumno.hashDatos?.substring(0,8) }}...</small></td>
                                         <td class="text-center">
                                             <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @click="eliminarAlumno(alumno, $event)">
                                                 <i class="bi bi-trash3-fill me-1"></i>

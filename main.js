@@ -53,13 +53,38 @@ const app = createApp({
         }
     },
     mounted() {
-        db.version(7).stores({
-            "alumnos": "idAlumno, codigo, nombre, direccion, municipio, departamento, telefono, fechaNacimiento, sexo, hash, email",
+        // eliminamos campo hash de alumnos porque ahora sólo se guarda en usuarios
+        // y mantenemos hashDatos como marca de contenido.
+        db.version(9).stores({
+            "alumnos": "idAlumno, codigo, nombre, direccion, municipio, departamento, telefono, fechaNacimiento, sexo, hashDatos, email",
             "materias": "idMateria, codigo, nombre, uv",
             "docentes": "idDocente, codigo, nombre, direccion, email, telefono, escalafon",
             "matriculas": "idMatricula, idAlumno, fecha, ciclo",
             "inscripciones": "idInscripcion, idAlumno, idMateria, fecha, ciclo",
             "usuarios": "idUsuario, usuario, hash"
+        }).upgrade(tx => {
+            // rellenar hashDatos para registros existentes y eliminar hash de contraseña
+            return tx.table('alumnos').toCollection().modify(alumno => {
+                if (!alumno.hashDatos) {
+                    const base = {
+                        idAlumno: alumno.idAlumno,
+                        codigo: alumno.codigo,
+                        nombre: alumno.nombre,
+                        direccion: alumno.direccion,
+                        municipio: alumno.municipio,
+                        departamento: alumno.departamento,
+                        telefono: alumno.telefono,
+                        fechaNacimiento: alumno.fechaNacimiento,
+                        sexo: alumno.sexo,
+                        email: alumno.email
+                    };
+                    alumno.hashDatos = sha256(JSON.stringify(base)).toString();
+                }
+                // eliminar campo hash porque ya no se usa en alumnos
+                if (alumno.hash) {
+                    delete alumno.hash;
+                }
+            });
         });
 
         // Los usuarios se gestionarán desde el componente de usuarios.

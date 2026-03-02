@@ -16,7 +16,8 @@ const alumnos = {
             },
             accion: 'nuevo',
             idAlumno: 0,
-            hashActual: '',
+            // hash calculado con los campos visibles, se muestra en la grilla
+            hashDatosActual: '',
             data_alumnos: []
         }
     },
@@ -37,13 +38,28 @@ const alumnos = {
             this.alumno.fechaNacimiento = alumno.fechaNacimiento;
             this.alumno.sexo = alumno.sexo;
             this.alumno.email = alumno.email;
-            this.hashActual = alumno.hash;
+            if (alumno.hashDatos) {
+                this.hashDatosActual = alumno.hashDatos;
+            } else {
+                // registro antiguo, generar de los campos disponibles
+                const base = {
+                    idAlumno: alumno.idAlumno,
+                    codigo: alumno.codigo,
+                    nombre: alumno.nombre,
+                    direccion: alumno.direccion,
+                    municipio: alumno.municipio,
+                    departamento: alumno.departamento,
+                    telefono: alumno.telefono,
+                    fechaNacimiento: alumno.fechaNacimiento,
+                    sexo: alumno.sexo,
+                    email: alumno.email
+                };
+                this.hashDatosActual = sha256(JSON.stringify(base)).toString();
+            }
         },
         async guardarAlumno() {
             try {
-                // Generar hash basado en el código del alumno (usado como contraseña predeterminada '123')
-                // El usuario pidió "hash de alumnos para encriptado de contraseña".
-                // Dejaremos '123' como clave por defecto para que el usuario pueda loguearse.
+                // Preparar datos comunes
                 let datos = {
                     idAlumno: this.accion == 'modificar' ? this.idAlumno : this.getId(),
                     codigo: this.alumno.codigo,
@@ -55,8 +71,32 @@ const alumnos = {
                     fechaNacimiento: this.alumno.fechaNacimiento,
                     sexo: this.alumno.sexo,
                     email: this.alumno.email,
-                    hash: this.accion == 'modificar' ? (this.hashActual || sha256('123').toString()) : sha256('123').toString()
                 };
+
+                // el hash de contraseña se almacena en la tabla usuarios
+                // cuando se crea un alumno nuevo se asigna la clave por defecto
+                let passHash;
+                if (this.accion == 'modificar') {
+                    const user = await db.usuarios.get(datos.idAlumno);
+                    passHash = user ? user.hash : sha256('123').toString();
+                } else {
+                    passHash = sha256('123').toString();
+                }
+
+                // hash que reacciona a cambios de los datos visibles
+                const hashSource = {
+                    idAlumno: datos.idAlumno,
+                    codigo: datos.codigo,
+                    nombre: datos.nombre,
+                    direccion: datos.direccion,
+                    municipio: datos.municipio,
+                    departamento: datos.departamento,
+                    telefono: datos.telefono,
+                    fechaNacimiento: datos.fechaNacimiento,
+                    sexo: datos.sexo,
+                    email: datos.email
+                };
+                datos.hashDatos = sha256(JSON.stringify(hashSource)).toString();
 
                 // Validar duplicidad de código
                 const alumnosExistentes = await db.alumnos.where('codigo').equals(datos.codigo).toArray();
@@ -67,11 +107,11 @@ const alumnos = {
 
                 await db.alumnos.put(datos);
 
-                // Sincronizar con la tabla de usuarios
+                // Sincronizar con la tabla de usuarios (contraseña)
                 await db.usuarios.put({
                     idUsuario: datos.idAlumno,
                     usuario: datos.codigo,
-                    hash: datos.hash
+                    hash: passHash
                 });
 
                 this.limpiarFormulario();
@@ -96,7 +136,7 @@ const alumnos = {
             this.alumno.fechaNacimiento = '';
             this.alumno.sexo = '';
             this.alumno.email = '';
-            this.hashActual = '';
+            this.hashDatosActual = '';
         },
     },
     template: `

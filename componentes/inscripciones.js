@@ -139,6 +139,7 @@ const inscripciones = {
                 await db.inscripciones.put(datos);
                 alertify.success("Inscripción exitosa");
                 this.limpiarFormulario();
+                this.$emit('buscar');
             } catch (e) {
                 console.error(e);
                 alertify.error("Error al procesar inscripción");

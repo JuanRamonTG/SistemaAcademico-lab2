@@ -116,6 +116,8 @@ const alumnos = {
 
                 this.limpiarFormulario();
                 alertify.success(`${datos.nombre} guardado correctamente`);
+                // notificar a la vista de búsqueda para refrescar
+                this.$emit('buscar');
             } catch (error) {
                 console.error(error);
                 alertify.error("Error al guardar alumno");

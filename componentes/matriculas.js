@@ -106,6 +106,7 @@ const matriculas = {
                 await db.matriculas.put(datos);
                 alertify.success("Matrícula guardada correctamente");
                 this.limpiarFormulario();
+                this.$emit('buscar');
             } catch (e) {
                 console.error(e);
                 alertify.error("Error al guardar matrícula");

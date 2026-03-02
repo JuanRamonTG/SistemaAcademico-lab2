@@ -51,7 +51,7 @@ const docentes = {
             db.docentes.put(datos);
             this.limpiarFormulario();
             alertify.success(`${datos.nombre} guardado correctamente`);
-            //this.obtenerDocentes();
+            this.$emit('buscar');
         },
         getId() {
             return new Date().getTime();

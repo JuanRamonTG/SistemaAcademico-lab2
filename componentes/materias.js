@@ -43,6 +43,7 @@ const materias = {
             this.limpiarFormulario();
             //this.obtenerMaterias();
             alertify.success(`Materia ${datos.nombre} guardada correctamente`);
+            this.$emit('buscar');
         },
         getId() {
             return new Date().getTime();
